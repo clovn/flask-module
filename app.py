@@ -6,8 +6,8 @@ from tensorflow import keras
 
 app = Flask(__name__)
 
-MODEL_PATH = 'stock_price_model_ver_2_10.h5'
-SCALER_PATH = 'scaler_ver_2_10.save'
+MODEL_PATH = 'stock_price_model_ver_2_60.h5'
+SCALER_PATH = 'scaler_ver_2_60.save'
 
 model = keras.models.load_model(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
