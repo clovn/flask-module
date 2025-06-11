@@ -57,4 +57,4 @@ if __name__ == '__main__':
     )[:, -1]
     print(np.concatenate((np.zeros((predictions.shape[0], 4)), predictions), axis=1))
     print(prediction_rescaled)
-    app.run(host='0.0.0.0', port=6000, debug=True)
+    app.run(host='0.0.0.0', port=8082, debug=True)
