@@ -6,19 +6,19 @@ from tensorflow import keras
 
 app = Flask(__name__)
 
-MODEL_PATH = 'stock_price_model_ver_2_10.h5'
-SCALER_PATH = 'scaler_ver_2_10.save'
+MODEL_PATH = 'stock_price_model.h5'
+SCALER_PATH = 'scaler.save'
 
 model = keras.models.load_model(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
 
-SEQ_LENGTH = 10
+SEQ_LENGTH = 60
 
 
 def preprocess_input_data(data, scaler):
     df = pd.DataFrame(data)
 
-    df = df[['open', 'high', 'low', 'close']]
+    df = df[['open', 'high', 'low', 'close', 'volume']]
 
     scaled_data = scaler.transform(df)
 
@@ -38,9 +38,10 @@ def predict_future():
         prediction = model.predict(X_new)
 
         prediction_rescaled = scaler.inverse_transform(
-            np.concatenate((np.zeros((prediction.shape[0], 3)), prediction), axis=1)
+            np.concatenate((np.zeros((prediction.shape[0], 4)), prediction), axis=1)
         )[:, -1]
 
+        prediction_rescaled[0] /= 337832
 
         return jsonify({'predicted_price': prediction_rescaled[0]})
 
@@ -49,4 +50,11 @@ def predict_future():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6000, debug=True)
+    X = np.random.random((1, 60, 5))
+    predictions = model.predict(X)
+    prediction_rescaled = scaler.inverse_transform(
+        np.concatenate((np.zeros((predictions.shape[0], 4)), predictions), axis=1)
+    )[:, -1]
+    print(np.concatenate((np.zeros((predictions.shape[0], 4)), predictions), axis=1))
+    print(prediction_rescaled)
+    app.run(host='0.0.0.0', port=8082, debug=True)
